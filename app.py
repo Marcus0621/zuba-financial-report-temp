@@ -50,19 +50,5 @@ if uploaded_file is not None:
     # Combine everything into a single DataFrame
     result_df = pd.concat(output, ignore_index=True)
 
-    # Show the processed data (optional, to let the user review the output)
+    # Show the processed data (without download)
     st.write(result_df)
-
-    # Convert the DataFrame to an Excel file in memory (avoid writing to file system)
-    result_file = io.BytesIO()
-    with pd.ExcelWriter(result_file, engine="xlsxwriter") as writer:
-        result_df.to_excel(writer, index=False, sheet_name="Processed Data")
-    result_file.seek(0)  # Reset pointer to the beginning
-
-    # Provide download button for the processed file
-    st.download_button(
-        label="Download Updated Payment Data",
-        data=result_file,
-        file_name="Updated_Payment_Data.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
