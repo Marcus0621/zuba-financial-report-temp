@@ -3,7 +3,7 @@ import pandas as pd
 import io
 
 # Title for the Streamlit app
-st.title("Excel File Processor")
+st.title("Temporary Zuba Financial Report")
 
 # Upload Excel file
 uploaded_file = st.file_uploader("Upload an Excel file", type=["xlsx"])
