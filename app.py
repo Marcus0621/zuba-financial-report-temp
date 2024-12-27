@@ -9,10 +9,13 @@ from data_processing import process_data  # Import the function from data_proces
 st.title("Temporary Zuba Financial Report")
 
 # Upload Excel file
-uploaded_file = st.file_uploader("Upload an Excel file", type=["xlsx"])
+uploaded_file = st.file_uploader("Upload Zuba Transaction Record Excel File:", type=["xlsx"])
 
 # Check if the file is uploaded
 if uploaded_file is not None:
+
+    st.success("File uploaded successfully!")
+
     # Read the uploaded Excel file into a DataFrame
     df_zuba = pd.read_excel(uploaded_file)
 
@@ -28,10 +31,12 @@ if uploaded_file is not None:
         result_df.to_excel(writer, index=False, sheet_name="Processed Data")
     result_file.seek(0)  # Reset pointer to the beginning
 
-    # Provide download button for the processed file
-    st.download_button(
-        label="Download Updated Payment Data",
+# Provide download button for the processed file
+    download_button = st.download_button(
+        label="Download Report",
         data=result_file,
-        file_name="Updated_Payment_Data.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        file_name="Financial_Report.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        use_container_width=True  # Make the button span the width of the container
     )
+
