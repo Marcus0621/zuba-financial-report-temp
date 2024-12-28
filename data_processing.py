@@ -38,7 +38,17 @@ def process_data(df_zuba):
                 'Total Amount Pay to Host': [totals.loc[totals['Owner Email'] == owner_email, 'Total Amount Pay to Host'].values[0]],
             }
         )
-        output.append(total_row)  # Add the totals row
+
+        #only to create empty row below
+        empty_row = pd.DataFrame(
+            {
+                'Owner Email': ['']
+            }
+        )
+
+        # Add rows 
+        output.append(total_row)  
+        output.append(empty_row)
 
     # Combine everything into a single DataFrame
     result_df = pd.concat(output, ignore_index=True)
