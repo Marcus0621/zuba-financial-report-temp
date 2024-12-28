@@ -6,7 +6,7 @@ import io
 from data_processing import process_data  # Import the function from data_processing.py
 
 # Title for the Streamlit app
-st.title("Temporary Zuba Financial Report v2")
+st.title("Temporary Zuba Financial Report v22")
 
 # Upload Excel file
 uploaded_file = st.file_uploader("Upload Zuba Transaction Record Excel File:", type=["xlsx"])
