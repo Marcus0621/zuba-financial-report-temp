@@ -15,6 +15,7 @@ def process_data(df_zuba):
 
     # Calculate "Total Room Rate" and add it as a new column
     df_zuba["Total Room Rate"] = df_zuba["Room / Per Night / Price/每晚/價格"] * df_zuba["Day(s)"]
+    df_zuba['TA Commision - 10%'] = df_zuba["Total Room Rate"] * 10/100
     df_zuba['Host Commision 12%'] = df_zuba["Total Room Rate"] * 12/100
     df_zuba['Total Amount After Commission'] = df_zuba["Total Room Rate"] - df_zuba['Host Commision 12%']
     df_zuba['Total Amount Pay to Host'] = df_zuba["Room / Cleaning Fee/清潔費"] + df_zuba["Room / Service Fee/服務費"] + df_zuba["Room / Tax/稅金"] + df_zuba['Total Amount After Commission']
@@ -39,8 +40,15 @@ def process_data(df_zuba):
             }
         )
 
+        empty_row = pd.DataFrame(
+            {
+                'Owner Email': [''],
+            }
+        )
+
         # Add rows 
         output.append(total_row)  
+        output.append(empty_row)
 
     # Combine everything into a single DataFrame
     result_df = pd.concat(output, ignore_index=True)
