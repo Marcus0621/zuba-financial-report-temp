@@ -39,8 +39,15 @@ def process_data(df_zuba):
             }
         )
 
+        empty_row = pd.DataFrame(
+            {
+                'Owner Email': [''],
+            }
+        )
+
         # Add rows 
         output.append(total_row)  
+        output.append(empty_row)
 
     # Combine everything into a single DataFrame
     result_df = pd.concat(output, ignore_index=True)
