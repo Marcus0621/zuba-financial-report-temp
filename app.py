@@ -9,7 +9,7 @@ from data_processing import process_data  # Import the function from data_proces
 st.title("Temporary Zuba Financial Report")
 
 # Upload Excel file
-uploaded_file = st.file_uploader("Upload Zuba Transaction Record Excel File:", type=["xlsx"])
+uploaded_file = st.file_uploader("Upload Zuba Transaction Record Excel:", type=["xlsx"])
 
 # Check if the file is uploaded
 if uploaded_file is not None:
