@@ -3,7 +3,9 @@
 import streamlit as st
 import pandas as pd
 import io
-from data_processing import process_data  # Import the function from data_processing.py
+from data_processing import process_data_zuba  # Import zuba data processing function
+from data_processing import process_data_ipay # Import ipay data processing function
+from data_processing import merge_dataset # Import merge dataset function
 
 # Title for the Streamlit app
 st.title("Temporary Zuba Financial Report")
@@ -20,23 +22,38 @@ if (uploaded_file_zuba is not None) & (uploaded_file_ipay is not None):
     try:
         st.success("File uploaded successfully!")
 
-        # Read the uploaded Excel file into a DataFrame
-        st.write("\n")
-        st.write("\n")
-        st.write("\n")
-        st.write("*Processed Zuba FInancial Report:*")
+        # Read ipay88 uploaded Excel File into DataFrame
+        df_ipay = pd.read_excel(uploaded_file_ipay)
+
+        # Read Zuba uploaded Excel file into a DataFrame
         df_zuba = pd.read_excel(uploaded_file_zuba) 
         
-        # Process the data using the function from data_processing.py
-        result_df = process_data(df_zuba)
+        # Process Zuba data using the function from data_processing.py
+        zuba_result_df = process_data_zuba(df_zuba)
+
+        # Process ipay data using the function from data_processing.py
+        ipay_result_df = process_data_ipay(df_ipay)
+
+        # Call function to further process and merge dataset
+        final_report = merge_dataset(zuba_result_df, ipay_result_df)
 
         # Show the processed data (optional, to let the user review the output)
-        st.write(result_df)
+        st.write("\n")
+        st.write("\n")
+        st.write("\n")
+        st.write("*Processed ipay88 Transaction Report:*")
+        st.write(ipay_result_df)
+        st.write("*Processed Zuba Transaction Report:*")
+        st.write(zuba_result_df)
+        st.write("\n")
+        st.write("\n")
+        st.write("**Final Financial Report:**")
+        st.write(final_report)
 
         # Convert the DataFrame to an Excel file in memory (avoid writing to file system)
         result_file = io.BytesIO()
         with pd.ExcelWriter(result_file, engine="xlsxwriter") as writer:
-            result_df.to_excel(writer, index=False, sheet_name="Processed Data")
+            final_report.to_excel(writer, index=False, sheet_name="Processed Data")
         result_file.seek(0)  # Reset pointer to the beginning
 
     # Provide download button for the processed file
