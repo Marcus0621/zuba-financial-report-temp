@@ -46,11 +46,12 @@ def merge_dataset(zuba_result_df, ipay_result_df):
 
     df_zuba = df_zuba[report_order]
     
-    # Sort the DataFrame by the 'Room Type' column (ensure the column name matches exactly)
+    # Sort the DataFrame by the 'Room Type' column
     df_zuba = df_zuba.sort_values(by='Room Type', ascending=True)
 
-    # Group by "Owner Email" and calculate the sum for "Total Amount Pay to Host"
-    totals = df_zuba.groupby('Owner Email')['Total Amount Pay to Host'].sum().reset_index()
+    # Group by "Owner Email" and calculate the sum 
+    total_host = df_zuba.groupby('Owner Email')['Total Amount Pay to Host'].sum().reset_index()
+    total_com = df_zuba.groupby('Owner Email')['Total Amount After Commission'].sum().reset_index()
 
     # Prepare a list to store the output DataFrame with totals rows
     output = []
@@ -61,8 +62,9 @@ def merge_dataset(zuba_result_df, ipay_result_df):
         # Create a totals row with NaN for non-relevant columns
         total_row = pd.DataFrame(
             {
-                'Owner Email': ['Total'],
-                'Total Amount Pay to Host': [totals.loc[totals['Owner Email'] == owner_email, 'Total Amount Pay to Host'].values[0]],
+                'Booking No.': ['Total'],
+                'Total Amount Pay to Host': [total_host.loc[total_host['Owner Email'] == owner_email, 'Total Amount Pay to Host'].values[0]],
+                'Total Amount After Commission': [total_com.loc[total_com['Owner Email'] == owner_email, 'Total Amount After Commission'].values[0]],
             }
         )
 
