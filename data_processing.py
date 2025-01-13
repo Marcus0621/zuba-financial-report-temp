@@ -5,6 +5,8 @@ import pandas as pd
 def process_data_zuba(df_zuba):    
     # Clean column names by removing leading/trailing spaces
     df_zuba.columns = df_zuba.columns.str.strip()
+    df_zuba = df_zuba.drop('Payment Method', axis=1) #drop payment Method to avoid merge issue 
+
     df_zuba_result = df_zuba
 
     return df_zuba_result
@@ -33,6 +35,26 @@ def merge_dataset(zuba_result_df, ipay_result_df):
     df_zuba["Day(s)"] = pd.to_numeric(df_zuba["Day(s)"].str.replace('天', '').str.strip(), errors='coerce')
     df_zuba["ipay88 MDR"] = None
 
+    #calculate for MDR value 
+    def assign_mdr_value(value):
+        if value in ['AliPay', 'AliPay_RMB']:
+            return '3.00%'
+        elif value in ['Boost Wallet', 'MAE by Maybank2u', 'MCash', 'ShopeePay', 'TNGWalletOnline', 'UnionPay Online QR (MYR)']:
+            return '1.50%'
+        elif value in ['Credit Card', 'UnionPay Credit Card']:
+            return '2.70%'
+        elif value in ['FPX', 'FPX_Affin', 'FPX_Agro', 'FPX_ALB', 'FPX_Ambank', 'FPX_BIMB', 'FPX_BOC', 'FPX_BRakyat', 'FPX_BSN', 'FPX_CIMB', 'FPX_HLB', 'FPX_HSBC', 'FPX_KFH', 'FPX_M2U', 'FPX_Muamalat', 'FPX_OCBC', 'FPX_PBB', 'FPX_RHB', 'FPX_SCB', 'FPX_UOB']:
+            return '2.70% / RM0.60'
+        elif value in ['GrabPay']:
+            return '2.70%'
+        elif value in ['Paypal']:
+            return '4.30% + RM2.00'
+        else:   
+            return None
+
+    df_zuba["ipay88 MDR"] = df_zuba['Payment Method'].apply(assign_mdr_value)
+    
+
     # Calculate "Total Room Rate" and add it as a new column
     df_zuba["Total Room Rate"] = df_zuba["Room / Per Night / Price/每晚/價格"] * df_zuba["Day(s)"]
     df_zuba['TA Commission - 10% (RM)'] = df_zuba["Total Room Rate"] * 10/100
@@ -43,16 +65,16 @@ def merge_dataset(zuba_result_df, ipay_result_df):
     #Reorder Column 
     report_order = ['Booking No.', 'Confirmation Code', 'Booking Date', 'User', 'Booker Name', 'Booker Email', 'Check-in Date', 'Check-out Date', 'Property', 'Owner Email', 'Room Type',  
                     'Unit(s)', 'Total Guest', 'Room / Per Night / Price/每晚/價格', 'Day(s)', 'Total Room Rate', 'Room / Cleaning Fee/清潔費', 'Room / Service Fee/服務費', 'Total Amount',
-                    'ipay88 MDR', 'Payment Method_x', 'Status', 'TA Commission - 10% (RM)', 'Host Commission - 12% (RM)', 'Total Amount After Commission (RM)', 'Total Amount Pay to Host (RM)'] 
+                    'ipay88 MDR', 'Payment Method', 'Status', 'TA Commission - 10% (RM)', 'Host Commission - 12% (RM)', 'Total Amount After Commission (RM)', 'Total Amount Pay to Host (RM)'] 
 
     df_zuba = df_zuba[report_order]
 
     #Change column name 
-    df_zuba.rename(columns={'Room / Per Night / Price/每晚/價格': 'Room / Per Night / Price/每晚/價格 (RM)'}, inplace=True)
-    df_zuba.rename(columns={'Room / Cleaning Fee/清潔費': 'Room / Cleaning Fee/清潔費 (RM)'}, inplace=True)
-    df_zuba.rename(columns={'Room / Service Fee/服務費': 'Room / Service Fee/服務費 (RM)'}, inplace=True)
-    df_zuba.rename(columns={'Room / Tax/稅金': 'Room / Tax/稅金 (RM)'}, inplace=True)
-    df_zuba.rename(columns={'Total Room Rate': 'Total Room Rate (RM)'}, inplace=True)
+    df_zuba.rename(columns={'Room / Per Night / Price/每晚/價格': 'Room / Per Night / Price/每晚/價格 (RM)'})
+    df_zuba.rename(columns={'Room / Cleaning Fee/清潔費': 'Room / Cleaning Fee/清潔費 (RM)'})
+    df_zuba.rename(columns={'Room / Service Fee/服務費': 'Room / Service Fee/服務費 (RM)'})
+    df_zuba.rename(columns={'Room / Tax/稅金': 'Room / Tax/稅金 (RM)'})
+    df_zuba.rename(columns={'Total Room Rate': 'Total Room Rate (RM)'})
     
     # Sort the DataFrame by the 'Room Type' column
     df_zuba = df_zuba.sort_values(by='Room Type', ascending=True)
