@@ -34,6 +34,7 @@ def merge_dataset(zuba_result_df, ipay_result_df):
     df_zuba["Room / Tax/稅金"] = pd.to_numeric(df_zuba["Room / Tax/稅金"].str.replace('RM', '').str.strip(), errors='coerce')
     df_zuba["Day(s)"] = pd.to_numeric(df_zuba["Day(s)"].str.replace('天', '').str.strip(), errors='coerce')
     df_zuba["Total Amount"] = pd.to_numeric(df_zuba["Total Amount"].str.replace('RM', '').str.strip(), errors='coerce')
+    df_zuba['Zuba Bank Received Payment (RM)'] = None
 
     #calculate for MDR value 
     def assign_mdr_value(value):
@@ -46,7 +47,7 @@ def merge_dataset(zuba_result_df, ipay_result_df):
         elif value in ['FPX', 'FPX_Affin', 'FPX_Agro', 'FPX_ALB', 'FPX_Ambank', 'FPX_BIMB', 'FPX_BOC', 'FPX_BRakyat', 'FPX_BSN', 'FPX_CIMB', 'FPX_HLB', 'FPX_HSBC', 'FPX_KFH', 'FPX_M2U', 'FPX_Muamalat', 'FPX_OCBC', 'FPX_PBB', 'FPX_RHB', 'FPX_SCB', 'FPX_UOB']:
             return '2.70% / RM0.60'
         elif value in ['GrabPay']:
-            return '2.70%'
+            return '1.70%'
         elif value in ['Paypal']:
             return '4.30% + RM2.00'
         else:   
@@ -62,10 +63,31 @@ def merge_dataset(zuba_result_df, ipay_result_df):
     df_zuba['Total Amount Pay to Host (RM)'] = df_zuba["Room / Cleaning Fee/清潔費"] + df_zuba["Room / Service Fee/服務費"] + df_zuba["Room / Tax/稅金"] + df_zuba['Total Amount After Commission (RM)']
     df_zuba['iPay88 Received Amount (RM)'] = df_zuba['Total Amount']
 
+    # Calculate for Zuba REceived Payment with iPay88 rate 
+    def calculate_zuba_received_payment(row):
+        if row['Payment Method'] in ['AliPay', 'AliPay_RMB']:
+            return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.03),2)
+        elif row['Payment Method'] in ['Boost Wallet', 'MAE by Maybank2u', 'MCash', 'ShopeePay', 'TNGWalletOnline', 'UnionPay Online QR (MYR)']:
+            return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.015),2)
+        elif row['Payment Method'] in ['Credit Card', 'UnionPay Credit Card']:
+            return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.027),2)
+        elif row['Payment Method'] in ['FPX', 'FPX_Affin', 'FPX_Agro', 'FPX_ALB', 'FPX_Ambank', 'FPX_BIMB', 'FPX_BOC', 'FPX_BRakyat', 'FPX_BSN', 'FPX_CIMB', 'FPX_HLB', 'FPX_HSBC', 'FPX_KFH', 'FPX_M2U', 'FPX_Muamalat', 'FPX_OCBC', 'FPX_PBB', 'FPX_RHB', 'FPX_SCB', 'FPX_UOB']:
+            amount_after_deduction = row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.027)
+            return round(amount_after_deduction if amount_after_deduction > 0.6 else 0.6, 2)
+        elif row['Payment Method'] in ['GrabPay']:
+            return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.017), 2)
+        elif row['Payment Method'] in ['Paypal']:
+            return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.043 + 2), 2)
+        else:
+            return None
+
+    # Apply the function to each row
+    df_zuba['Zuba Bank Received Payment (RM)'] = df_zuba.apply(calculate_zuba_received_payment, axis=1)
+
     #Reorder Column 
     report_order = ['Booking No.', 'Confirmation Code', 'Booking Date', 'User', 'Booker Name', 'Booker Email', 'Check-in Date', 'Check-out Date', 'Property', 'Owner Email', 'Room Type',  
                     'Unit(s)', 'Total Guest', 'Room / Per Night / Price/每晚/價格', 'Day(s)', 'Total Room Rate', 'Room / Cleaning Fee/清潔費', 'Room / Service Fee/服務費', 'Total Amount', 'iPay88 Received Amount (RM)',
-                    'ipay88 MDR', 'Payment Method', 'Status', 'TA Commission - 10% (RM)', 'Host Commission - 12% (RM)', 'Total Amount After Commission (RM)', 'Total Amount Pay to Host (RM)'] 
+                    'ipay88 MDR', 'Zuba Bank Received Payment (RM)', 'Payment Method', 'Status', 'TA Commission - 10% (RM)', 'Host Commission - 12% (RM)', 'Total Amount After Commission (RM)', 'Total Amount Pay to Host (RM)'] 
 
     df_zuba = df_zuba[report_order]
 

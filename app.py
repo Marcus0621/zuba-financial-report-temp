@@ -19,7 +19,7 @@ uploaded_file_zuba = st.file_uploader("**Upload Zuba Transaction Record Xlsx:**"
 # Check if the file is uploaded
 if (uploaded_file_zuba is not None) & (uploaded_file_ipay is not None):
 
-    try:
+    # try:
         st.success("File uploaded successfully!")
 
         # Read ipay88 uploaded Excel File into DataFrame
@@ -65,5 +65,5 @@ if (uploaded_file_zuba is not None) & (uploaded_file_ipay is not None):
             use_container_width=True  # Make the button span the width of the container
         )
 
-    except Exception as e:
-        st.error("Wrong Report Format")
+    # except Exception as e:
+    #     st.error("Wrong Report Format")
