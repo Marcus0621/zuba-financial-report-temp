@@ -7,8 +7,28 @@ from data_processing import process_data_zuba  # Import zuba data processing fun
 from data_processing import process_data_ipay # Import ipay data processing function
 from data_processing import merge_dataset # Import merge dataset function
 
-# Title for the Streamlit app
-st.title("Temporary Zuba Financial Report")
+# Display the image and the title side by side
+col1, col2 = st.columns([1, 6])  # Adjust the ratio as needed
+
+with col1:
+    # Display the logo
+    st.image("/workspaces/financial-report-11-20/Zuba Logo.png", width=65)  # Replace with your image path
+
+with col2:
+    # Display the title
+    st.markdown(
+        """
+        <style>
+        .custom-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #003366;  /* Dark blue for the title */
+        }
+        </style>
+        <div class="custom-title">Zuba Financial Report Processor</div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 #Upload Excel file from ipay Report
 uploaded_file_ipay = st.file_uploader("**Upload ipay88 Transaction Record Xlsx:**", type=["xlsx"])
