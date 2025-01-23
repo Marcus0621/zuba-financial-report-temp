@@ -39,14 +39,14 @@ uploaded_file_zuba = st.file_uploader("**Upload Zuba Transaction Record Xlsx:**"
 # Check if the file is uploaded
 if (uploaded_file_zuba is not None) & (uploaded_file_ipay is not None):
 
-    try:
+    # try:
         st.success("File uploaded successfully!")
 
         # Read ipay88 uploaded Excel File into DataFrame
-        df_ipay = pd.read_excel(uploaded_file_ipay)
+        df_ipay = pd.read_excel(uploaded_file_ipay, dtype=str)
 
         # Read Zuba uploaded Excel file into a DataFrame
-        df_zuba = pd.read_excel(uploaded_file_zuba) 
+        df_zuba = pd.read_excel(uploaded_file_zuba, dtype=str) 
         
         # Process Zuba data using the function from data_processing.py
         zuba_result_df = process_data_zuba(df_zuba)
@@ -85,5 +85,5 @@ if (uploaded_file_zuba is not None) & (uploaded_file_ipay is not None):
             use_container_width=True  # Make the button span the width of the container
         )
 
-    except Exception as e:
-        st.error("Wrong Report Format")
+    # except Exception as e:
+    #     st.error("Wrong Report Format")

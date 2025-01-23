@@ -127,7 +127,7 @@ def merge_dataset(zuba_result_df, ipay_result_df):
             {
                 'Booking No.': ['Total'],
                 'Total Amount Pay to Host (RM)': [total_host.loc[total_host['Owner Email'] == owner_email, 'Total Amount Pay to Host (RM)'].values[0]],
-                'Total Amount After Commission (RM)': [total_com.loc[total_com['Owner Email'] == owner_email, 'Total Amount After Commission (RM)'].values[0]],
+                'Total Amount After Commission (RM)': [total_com.loc[total_com['Owner Email'] == owner_email, 'Total Amount After Commission (RM)'].values[0]]
             }
         )
 
