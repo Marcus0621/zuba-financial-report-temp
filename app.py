@@ -12,7 +12,7 @@ col1, col2 = st.columns([1, 6])  # Adjust the ratio as needed
 
 with col1:
     # Display the logo
-    st.image("/workspaces/financial-report-11-20/Zuba Logo.png", width=65)  # Replace with your image path
+    st.image("Zuba Logo.png", width=65)  # Replace with your image path
 
 with col2:
     # Display the title
