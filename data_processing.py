@@ -144,4 +144,18 @@ def merge_dataset(zuba_result_df, ipay_result_df):
     # Combine everything into a single DataFrame
     df_zuba_result = pd.concat(output, ignore_index=True)
 
+    # Add "Created By" and "Checked By" rows at the bottom
+    created_checked_rows = pd.DataFrame([
+        {'Booking No.': ''},
+        {'Booking No.': ''},
+        {'Booking No.': ''},
+        {'Booking No.': ''},
+        {'Booking No.': ''},
+        {'Booking No.': ''},
+        {'Booking No.': ''},
+        {'Booking No.': 'Created By:', 'Confirmation Code': 'Marcus Chin'},
+        {'Booking No.': 'Checked By:'}
+    ])
+    df_zuba_result = pd.concat([df_zuba_result, created_checked_rows], ignore_index=True)
+
     return df_zuba_result
