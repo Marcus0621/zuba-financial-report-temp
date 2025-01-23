@@ -17,7 +17,7 @@ def process_data_ipay(df_ipay):
     df_ipay.columns = df_ipay.columns.str.strip()
 
     # Retain only the chosen columns
-    chosen_columns = ['Merchant RefNo', 'Payment Method']  # Define the columns you want to keep
+    chosen_columns = ['Merchant RefNo', 'Payment Method', 'Card type']  # Define the columns you want to keep
     df_ipay_result = df_ipay[chosen_columns]  # Filter the DataFrame to keep only these columns
 
     return df_ipay_result
@@ -38,22 +38,30 @@ def merge_dataset(zuba_result_df, ipay_result_df):
 
     #calculate for MDR value 
     def assign_mdr_value(value):
-        if value in ['AliPay', 'AliPay_RMB']:
+
+        #To check 2 columns
+        payment_method = value['Payment Method']
+        card_type = value['Card type']
+
+        if payment_method in ['AliPay', 'AliPay_RMB']:
             return '3.00%'
-        elif value in ['Boost Wallet', 'MAE by Maybank2u', 'MCash', 'ShopeePay', 'TNGWalletOnline', 'UnionPay Online QR (MYR)']:
+        elif payment_method in ['Boost Wallet', 'MAE by Maybank2u', 'MCash', 'ShopeePay', 'TNGWalletOnline', 'UnionPay Online QR (MYR)']:
             return '1.50%'
-        elif value in ['Credit Card', 'UnionPay Credit Card']:
-            return '2.70%'
-        elif value in ['FPX', 'FPX_Affin', 'FPX_Agro', 'FPX_ALB', 'FPX_Ambank', 'FPX_BIMB', 'FPX_BOC', 'FPX_BRakyat', 'FPX_BSN', 'FPX_CIMB', 'FPX_HLB', 'FPX_HSBC', 'FPX_KFH', 'FPX_M2U', 'FPX_Muamalat', 'FPX_OCBC', 'FPX_PBB', 'FPX_RHB', 'FPX_SCB', 'FPX_UOB']:
+        elif payment_method in ['Credit Card', 'UnionPay Credit Card']:
+            if card_type in ['LOCAL CREDIT']:
+                return '2.70%'
+            else: 
+                return '2.50%'
+        elif payment_method in ['FPX', 'FPX_Affin', 'FPX_Agro', 'FPX_ALB', 'FPX_Ambank', 'FPX_BIMB', 'FPX_BOC', 'FPX_BRakyat', 'FPX_BSN', 'FPX_CIMB', 'FPX_HLB', 'FPX_HSBC', 'FPX_KFH', 'FPX_M2U', 'FPX_Muamalat', 'FPX_OCBC', 'FPX_PBB', 'FPX_RHB', 'FPX_SCB', 'FPX_UOB']:
             return '2.70% / RM0.60'
-        elif value in ['GrabPay']:
+        elif payment_method in ['GrabPay']:
             return '1.70%'
-        elif value in ['Paypal']:
+        elif payment_method in ['Paypal']:
             return '4.30% + RM2.00'
         else:   
             return None
 
-    df_zuba["ipay88 MDR"] = df_zuba['Payment Method'].apply(assign_mdr_value)
+    df_zuba["ipay88 MDR"] = df_zuba.apply(assign_mdr_value, axis=1)
     
     # Add calculation and new column 
     df_zuba["Total Room Rate"] = df_zuba["Room / Per Night / Price/每晚/價格"] * df_zuba["Day(s)"]
@@ -74,18 +82,26 @@ def merge_dataset(zuba_result_df, ipay_result_df):
 
     # Calculate for Zuba REceived Payment with iPay88 rate 
     def calculate_zuba_received_payment(row):
-        if row['Payment Method'] in ['AliPay', 'AliPay_RMB']:
+
+        #To check 2 columns
+        payment_method = row['Payment Method']
+        card_type = row['Card type']
+
+        if payment_method in ['AliPay', 'AliPay_RMB']:
             return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.03),2)
-        elif row['Payment Method'] in ['Boost Wallet', 'MAE by Maybank2u', 'MCash', 'ShopeePay', 'TNGWalletOnline', 'UnionPay Online QR (MYR)']:
+        elif payment_method in ['Boost Wallet', 'MAE by Maybank2u', 'MCash', 'ShopeePay', 'TNGWalletOnline', 'UnionPay Online QR (MYR)']:
             return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.015),2)
-        elif row['Payment Method'] in ['Credit Card', 'UnionPay Credit Card']:
-            return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.027),2)
-        elif row['Payment Method'] in ['FPX', 'FPX_Affin', 'FPX_Agro', 'FPX_ALB', 'FPX_Ambank', 'FPX_BIMB', 'FPX_BOC', 'FPX_BRakyat', 'FPX_BSN', 'FPX_CIMB', 'FPX_HLB', 'FPX_HSBC', 'FPX_KFH', 'FPX_M2U', 'FPX_Muamalat', 'FPX_OCBC', 'FPX_PBB', 'FPX_RHB', 'FPX_SCB', 'FPX_UOB']:
+        elif payment_method in ['Credit Card', 'UnionPay Credit Card']:
+            if card_type in ['LOCAL CREDIT']:
+                return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.027),2)
+            else:
+                return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.025),2)   
+        elif payment_method in ['FPX', 'FPX_Affin', 'FPX_Agro', 'FPX_ALB', 'FPX_Ambank', 'FPX_BIMB', 'FPX_BOC', 'FPX_BRakyat', 'FPX_BSN', 'FPX_CIMB', 'FPX_HLB', 'FPX_HSBC', 'FPX_KFH', 'FPX_M2U', 'FPX_Muamalat', 'FPX_OCBC', 'FPX_PBB', 'FPX_RHB', 'FPX_SCB', 'FPX_UOB']:
             amount_after_deduction = row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.027)
             return round(amount_after_deduction if amount_after_deduction > 0.6 else 0.6, 2)
-        elif row['Payment Method'] in ['GrabPay']:
+        elif payment_method in ['GrabPay']:
             return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.017), 2)
-        elif row['Payment Method'] in ['Paypal']:
+        elif payment_method in ['Paypal']:
             return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.043 + 2), 2)
         else:
             return None
