@@ -32,7 +32,7 @@ def merge_dataset(zuba_result_df, ipay_result_df):
     df_zuba["Room / Cleaning Fee/清潔費"] = pd.to_numeric(df_zuba["Room / Cleaning Fee/清潔費"].str.replace('RM', '').str.strip(), errors='coerce')
     df_zuba["Room / Service Fee/服務費"] = pd.to_numeric(df_zuba["Room / Service Fee/服務費"].str.replace('RM', '').str.strip(), errors='coerce')
     df_zuba["Room / Tax/稅金"] = pd.to_numeric(df_zuba["Room / Tax/稅金"].str.replace('RM', '').str.strip(), errors='coerce')
-    df_zuba["Day(s)"] = pd.to_numeric(df_zuba["Day(s)"].str.replace('天', '').str.strip(), errors='coerce')
+    df_zuba["Day(s)"] = pd.to_numeric(df_zuba["Day(s)"], errors='coerce')
     df_zuba["Total Amount"] = pd.to_numeric(df_zuba["Total Amount"].str.replace('RM', '').str.strip(), errors='coerce')
     df_zuba['Zuba Bank Received Payment (RM)'] = None
 
@@ -57,7 +57,17 @@ def merge_dataset(zuba_result_df, ipay_result_df):
     
     # Add calculation and new column 
     df_zuba["Total Room Rate"] = df_zuba["Room / Per Night / Price/每晚/價格"] * df_zuba["Day(s)"]
-    df_zuba['TA Commission - 10% (RM)'] = df_zuba["Total Room Rate"] * 10/100
+
+    # Define the function to assign TA commission
+    def assign_TA_com(row):
+        if row["User"] == 'Guests':  # Check the "User" column for "Guest"
+            return None  # No commission for "Guest"
+        else:
+            return row["Total Room Rate"] * 10 / 100  # Calculate 10% commission
+
+    # Apply the function row by row
+    df_zuba['TA Commission - 10% (RM)'] = df_zuba.apply(assign_TA_com, axis=1)
+
     df_zuba['Host Commission - 12% (RM)'] = df_zuba["Total Room Rate"] * 12/100
     df_zuba['Total Amount After Commission (RM)'] = df_zuba["Total Room Rate"] - df_zuba['Host Commission - 12% (RM)']
     df_zuba['Total Amount Pay to Host (RM)'] = df_zuba["Room / Cleaning Fee/清潔費"] + df_zuba["Room / Service Fee/服務費"] + df_zuba["Room / Tax/稅金"] + df_zuba['Total Amount After Commission (RM)']
