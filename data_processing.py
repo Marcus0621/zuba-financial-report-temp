@@ -67,7 +67,6 @@ def merge_dataset(zuba_result_df, ipay_result_df):
 
     # Apply the function row by row
     df_zuba['TA Commission - 10% (RM)'] = df_zuba.apply(assign_TA_com, axis=1)
-
     df_zuba['Host Commission - 12% (RM)'] = df_zuba["Total Room Rate"] * 12/100
     df_zuba['Total Amount After Commission (RM)'] = df_zuba["Total Room Rate"] - df_zuba['Host Commission - 12% (RM)']
     df_zuba['Total Amount Pay to Host (RM)'] = df_zuba["Room / Cleaning Fee/清潔費"] + df_zuba["Room / Service Fee/服務費"] + df_zuba["Room / Tax/稅金"] + df_zuba['Total Amount After Commission (RM)']
@@ -93,6 +92,9 @@ def merge_dataset(zuba_result_df, ipay_result_df):
 
     # Apply the function to each row
     df_zuba['Zuba Bank Received Payment (RM)'] = df_zuba.apply(calculate_zuba_received_payment, axis=1)
+
+    #Calculate for Total Amount Pay to Host (RM)
+    df_zuba['Total Amount Pay to Host (RM)'] = df_zuba['Zuba Bank Received Payment (RM)'] - df_zuba['Host Commission - 12% (RM)']
 
     #Reorder Column 
     report_order = ['Booking No.', 'Confirmation Code', 'Booking Date', 'User', 'Booker Name', 'Booker Email', 'Check-in Date', 'Check-out Date', 'Property', 'Owner Email', 'Room Type',  
