@@ -30,8 +30,10 @@ def merge_dataset(zuba_result_df, ipay_result_df):
     # Column formatting for easier calculation 
     df_zuba["Room / Per Night / Price/每晚/價格"] = pd.to_numeric(df_zuba["Room / Per Night / Price/每晚/價格"].str.replace('RM', '').str.strip(), errors='coerce')
     df_zuba["Room / Cleaning Fee/清潔費"] = pd.to_numeric(df_zuba["Room / Cleaning Fee/清潔費"].str.replace('RM', '').str.strip(), errors='coerce')
-    df_zuba["Room / Service Fee/服務費"] = pd.to_numeric(df_zuba["Room / Service Fee/服務費"].str.replace('RM', '').str.strip(), errors='coerce')
-    df_zuba["Room / Tax/稅金"] = pd.to_numeric(df_zuba["Room / Tax/稅金"].str.replace('RM', '').str.strip(), errors='coerce')
+    df_zuba["Sales Tax"] = pd.to_numeric(df_zuba["Sales Tax"].str.replace('RM', '').str.strip(), errors='coerce')
+    df_zuba["Hotel Tax"] = pd.to_numeric(df_zuba["Hotel Tax"].str.replace('RM', '').str.strip(), errors='coerce')
+    df_zuba["Service Tax"] = pd.to_numeric(df_zuba["Service Tax"].str.replace('RM', '').str.strip(), errors='coerce')
+    df_zuba["Tourist Tax"] = pd.to_numeric(df_zuba["Tourist Tax"].str.replace('RM', '').str.strip(), errors='coerce')
     df_zuba["Day(s)"] = pd.to_numeric(df_zuba["Day(s)"], errors='coerce')
     df_zuba["Total Amount"] = pd.to_numeric(df_zuba["Total Amount"].str.replace('RM', '').str.strip(), errors='coerce')
     df_zuba['Zuba Bank Received Payment (RM)'] = None
@@ -75,9 +77,9 @@ def merge_dataset(zuba_result_df, ipay_result_df):
 
     # Apply the function row by row
     df_zuba['TA Commission - 10% (RM)'] = df_zuba.apply(assign_TA_com, axis=1)
+    
     df_zuba['Host Commission - 12% (RM)'] = df_zuba["Total Room Rate"] * 12/100
     df_zuba['Total Amount After Commission (RM)'] = df_zuba["Total Room Rate"] - df_zuba['Host Commission - 12% (RM)']
-    df_zuba['Total Amount Pay to Host (RM)'] = df_zuba["Room / Cleaning Fee/清潔費"] + df_zuba["Room / Service Fee/服務費"] + df_zuba["Room / Tax/稅金"] + df_zuba['Total Amount After Commission (RM)']
     df_zuba['iPay88 Received Amount (RM)'] = df_zuba['Total Amount']
 
     # Calculate for Zuba REceived Payment with iPay88 rate 
@@ -98,7 +100,7 @@ def merge_dataset(zuba_result_df, ipay_result_df):
                 return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.025),2)   
         elif payment_method in ['FPX', 'FPX_Affin', 'FPX_Agro', 'FPX_ALB', 'FPX_Ambank', 'FPX_BIMB', 'FPX_BOC', 'FPX_BRakyat', 'FPX_BSN', 'FPX_CIMB', 'FPX_HLB', 'FPX_HSBC', 'FPX_KFH', 'FPX_M2U', 'FPX_Muamalat', 'FPX_OCBC', 'FPX_PBB', 'FPX_RHB', 'FPX_SCB', 'FPX_UOB']:
             amount_after_deduction = row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.027)
-            return round(amount_after_deduction if amount_after_deduction > 0.6 else 0.6, 2)
+            return round(amount_after_deduction if amount_after_deduction > 0.6 else (row['iPay88 Received Amount (RM)'] - 0.6), 2)
         elif payment_method in ['GrabPay']:
             return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.017), 2)
         elif payment_method in ['Paypal']:
@@ -109,12 +111,12 @@ def merge_dataset(zuba_result_df, ipay_result_df):
     # Apply the function to each row
     df_zuba['Zuba Bank Received Payment (RM)'] = df_zuba.apply(calculate_zuba_received_payment, axis=1)
 
-    #Calculate for Total Amount Pay to Host (RM)
-    df_zuba['Total Amount Pay to Host (RM)'] = df_zuba['Zuba Bank Received Payment (RM)'] - df_zuba['Host Commission - 12% (RM)']
+    #Calculate for Total Amount Pay to Host (RM), use Zuba receive payment because already include tax inside 
+    df_zuba['Total Amount Pay to Host (RM)'] = df_zuba['Zuba Bank Received Payment (RM)'] - df_zuba['Host Commission - 12% (RM)'] - df_zuba['Tourist Tax']
 
     #Reorder Column 
     report_order = ['Booking No.', 'Confirmation Code', 'Booking Date', 'User', 'Booker Name', 'Booker Email', 'Check-in Date', 'Check-out Date', 'Property', 'Owner Email', 'Room Type',  
-                    'Unit(s)', 'Total Guest', 'Room / Per Night / Price/每晚/價格', 'Day(s)', 'Total Room Rate', 'Room / Cleaning Fee/清潔費', 'Room / Service Fee/服務費', 'Total Amount', 'iPay88 Received Amount (RM)',
+                    'Unit(s)', 'Total Guest', 'Room / Per Night / Price/每晚/價格', 'Day(s)', 'Total Room Rate', 'Room / Cleaning Fee/清潔費', 'Sales Tax', 'Hotel Tax', 'Service Tax', 'Tourist Tax', 'Total Amount', 'iPay88 Received Amount (RM)',
                     'ipay88 MDR', 'Zuba Bank Received Payment (RM)', 'Payment Method', 'Status', 'TA Commission - 10% (RM)', 'Host Commission - 12% (RM)', 'Total Amount After Commission (RM)', 'Total Amount Pay to Host (RM)'] 
 
     df_zuba = df_zuba[report_order]
@@ -122,8 +124,10 @@ def merge_dataset(zuba_result_df, ipay_result_df):
     #Change column name 
     df_zuba.rename(columns={'Room / Per Night / Price/每晚/價格': 'Room / Per Night / Price/每晚/價格 (RM)'}, inplace=True)
     df_zuba.rename(columns={'Room / Cleaning Fee/清潔費': 'Room / Cleaning Fee/清潔費 (RM)'}, inplace=True)
-    df_zuba.rename(columns={'Room / Service Fee/服務費': 'Room / Service Fee/服務費 (RM)'}, inplace=True)
-    df_zuba.rename(columns={'Room / Tax/稅金': 'Room / Tax/稅金 (RM)'}, inplace=True)
+    df_zuba.rename(columns={'Sales Tax': 'Sales & Service Tax (RM)'}, inplace=True)
+    df_zuba.rename(columns={'Service Tax': 'Service Charge (RM)'}, inplace=True)
+    df_zuba.rename(columns={'Tourist Tax': 'Tourist Tax (RM)'}, inplace=True)
+    df_zuba.rename(columns={'Hotel Tax': 'Hotel Tax (RM)'}, inplace=True)
     df_zuba.rename(columns={'Total Room Rate': 'Total Room Rate (RM)'}, inplace=True)
     df_zuba.rename(columns={'Total Amount': 'Total Amount (RM)'}, inplace=True)
     
