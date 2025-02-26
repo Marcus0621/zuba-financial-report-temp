@@ -97,6 +97,7 @@ st.markdown("""
         text-align: left;
         padding: 10px;
         font-size: 14px;
+        color: grey;
     }
     </style>
     <div class="footer">
