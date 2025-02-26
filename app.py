@@ -1,5 +1,3 @@
-# app.py
-
 import streamlit as st
 import pandas as pd
 import io
@@ -88,7 +86,7 @@ if (uploaded_file_zuba is not None) & (uploaded_file_ipay is not None):
     # except Exception as e:
     #     st.error("Wrong Report Format")
 
-# Footer with fixed positioning
+# Set Footer for version 
 st.markdown("""
     <style>
     .footer {

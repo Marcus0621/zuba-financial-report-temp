@@ -1,11 +1,13 @@
-# data_processing.py
-
 import pandas as pd
 
 def process_data_zuba(df_zuba):    
     # Clean column names by removing leading/trailing spaces
     df_zuba.columns = df_zuba.columns.str.strip()
     df_zuba = df_zuba.drop('Payment Method', axis=1) #drop payment Method to avoid merge issue 
+
+    # Make sure Booking No and Confiramtion Code are set to string 
+    df_zuba['Booking No.'] = df_zuba['Booking No'].astype(str)
+    df_zuba['Confirmation Code'] = df_zuba['Confirmation Code'].astype(str)
 
     df_zuba_result = df_zuba
 
@@ -131,12 +133,14 @@ def merge_dataset(zuba_result_df, ipay_result_df):
     df_zuba.rename(columns={'Total Room Rate': 'Total Room Rate (RM)'}, inplace=True)
     df_zuba.rename(columns={'Total Amount': 'Total Amount (RM)'}, inplace=True)
     
-    # Sort the DataFrame by the 'Room Type' column
-    df_zuba = df_zuba.sort_values(by='Room Type', ascending=True)
+    #   the DataFrame by the 'Room Type' column
+    # df_zuba = df_zuba.sort_values(by='Room Type', ascending=True)
 
     # Group by "Owner Email" and calculate the sum 
     total_host = df_zuba.groupby('Owner Email')['Total Amount Pay to Host (RM)'].sum().reset_index()
     total_com = df_zuba.groupby('Owner Email')['Total Amount After Commission (RM)'].sum().reset_index()
+
+    df_zuba = df_zuba.sort_values(by='Booking No.', ascending=True)
 
     # Prepare a list to store the output DataFrame with totals rows
     output = []
