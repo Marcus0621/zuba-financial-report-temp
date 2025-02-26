@@ -87,3 +87,21 @@ if (uploaded_file_zuba is not None) & (uploaded_file_ipay is not None):
 
     # except Exception as e:
     #     st.error("Wrong Report Format")
+
+# Footer with fixed positioning
+st.markdown("""
+    <style>
+    .footer {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        width: 100%;
+        text-align: left;
+        padding: 10px;
+        font-size: 14px;
+    }
+    </style>
+    <div class="footer">
+        Marcus (Version. 20250226)
+    </div>
+    """, unsafe_allow_html=True)
