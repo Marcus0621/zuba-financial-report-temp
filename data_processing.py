@@ -6,7 +6,7 @@ def process_data_zuba(df_zuba):
     df_zuba = df_zuba.drop('Payment Method', axis=1) #drop payment Method to avoid merge issue 
 
     # Make sure Booking No and Confiramtion Code are set to string 
-    df_zuba['Booking No.'] = df_zuba['Booking No'].astype(str)
+    df_zuba['Booking No.'] = df_zuba['Booking No.'].astype(str)
     df_zuba['Confirmation Code'] = df_zuba['Confirmation Code'].astype(str)
 
     df_zuba_result = df_zuba
