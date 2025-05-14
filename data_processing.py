@@ -49,7 +49,7 @@ def merge_dataset(zuba_result_df, ipay_result_df):
 
         if payment_method in ['AliPay', 'AliPay_RMB']:
             return '3.00%'
-        elif payment_method in ['Boost Wallet', 'MAE by Maybank2u', 'MCash', 'ShopeePay', 'TNGWalletOnline', 'UnionPay Online QR (MYR)']:
+        elif payment_method in ['Boost Wallet', 'MCash', 'ShopeePay', 'UnionPay Online QR (MYR)']:
             return '1.50%'
         elif payment_method in ['Credit Card', 'UnionPay Credit Card']:
             if card_type in ['LOCAL CREDIT']:
@@ -57,11 +57,13 @@ def merge_dataset(zuba_result_df, ipay_result_df):
             else: 
                 return '2.50%'
         elif payment_method in ['FPX', 'FPX_Affin', 'FPX_Agro', 'FPX_ALB', 'FPX_Ambank', 'FPX_BIMB', 'FPX_BOC', 'FPX_BRakyat', 'FPX_BSN', 'FPX_CIMB', 'FPX_HLB', 'FPX_HSBC', 'FPX_KFH', 'FPX_M2U', 'FPX_Muamalat', 'FPX_OCBC', 'FPX_PBB', 'FPX_RHB', 'FPX_SCB', 'FPX_UOB']:
-            return '2.70% / RM0.60'
-        elif payment_method in ['GrabPay']:
+            return '2.40% / RM0.60'
+        elif payment_method in ['GrabPay', 'TNGWalletOnline']:
             return '1.70%'
         elif payment_method in ['Paypal']:
             return '4.30% + RM2.00'
+        elif payment_method in ['MAE by Maybank2u']:
+            return '1.00%'
         else:   
             return None
 
@@ -93,17 +95,19 @@ def merge_dataset(zuba_result_df, ipay_result_df):
 
         if payment_method in ['AliPay', 'AliPay_RMB']:
             return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.03),2)
-        elif payment_method in ['Boost Wallet', 'MAE by Maybank2u', 'MCash', 'ShopeePay', 'TNGWalletOnline', 'UnionPay Online QR (MYR)']:
+        elif payment_method in ['Boost Wallet', 'MCash', 'ShopeePay', 'UnionPay Online QR (MYR)']:
             return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.015),2)
+        elif payment_method in ['MAE by Maybank2u']:
+            return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.01),2)
         elif payment_method in ['Credit Card', 'UnionPay Credit Card']:
             if card_type in ['LOCAL CREDIT']:
                 return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.027),2)
             else:
                 return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.025),2)   
         elif payment_method in ['FPX', 'FPX_Affin', 'FPX_Agro', 'FPX_ALB', 'FPX_Ambank', 'FPX_BIMB', 'FPX_BOC', 'FPX_BRakyat', 'FPX_BSN', 'FPX_CIMB', 'FPX_HLB', 'FPX_HSBC', 'FPX_KFH', 'FPX_M2U', 'FPX_Muamalat', 'FPX_OCBC', 'FPX_PBB', 'FPX_RHB', 'FPX_SCB', 'FPX_UOB']:
-            amount_after_deduction = row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.027)
+            amount_after_deduction = row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.024)
             return round(amount_after_deduction if amount_after_deduction > 0.6 else (row['iPay88 Received Amount (RM)'] - 0.6), 2)
-        elif payment_method in ['GrabPay']:
+        elif payment_method in ['GrabPay', 'TNGWalletOnline']:
             return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.017), 2)
         elif payment_method in ['Paypal']:
             return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.043 + 2), 2)
