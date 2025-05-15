@@ -52,10 +52,8 @@ def merge_dataset(zuba_result_df, ipay_result_df):
         elif payment_method in ['Boost Wallet', 'MCash', 'ShopeePay', 'UnionPay Online QR (MYR)']:
             return '1.50%'
         elif payment_method in ['Credit Card', 'UnionPay Credit Card']:
-            if card_type in ['LOCAL CREDIT']:
-                return '2.70%'
-            else: 
-                return '2.50%'
+            if card_type in ['LOCAL CREDIT', 'LOCAL DEBIT']:
+                return '2.40%'
         elif payment_method in ['FPX', 'FPX_Affin', 'FPX_Agro', 'FPX_ALB', 'FPX_Ambank', 'FPX_BIMB', 'FPX_BOC', 'FPX_BRakyat', 'FPX_BSN', 'FPX_CIMB', 'FPX_HLB', 'FPX_HSBC', 'FPX_KFH', 'FPX_M2U', 'FPX_Muamalat', 'FPX_OCBC', 'FPX_PBB', 'FPX_RHB', 'FPX_SCB', 'FPX_UOB']:
             return '2.40% / RM0.60'
         elif payment_method in ['GrabPay', 'TNGWalletOnline']:
@@ -100,10 +98,8 @@ def merge_dataset(zuba_result_df, ipay_result_df):
         elif payment_method in ['MAE by Maybank2u']:
             return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.01),2)
         elif payment_method in ['Credit Card', 'UnionPay Credit Card']:
-            if card_type in ['LOCAL CREDIT']:
-                return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.027),2)
-            else:
-                return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.025),2)   
+            if card_type in ['LOCAL CREDIT', 'LOCAL DEBIT']:
+                return round(row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.024),2)
         elif payment_method in ['FPX', 'FPX_Affin', 'FPX_Agro', 'FPX_ALB', 'FPX_Ambank', 'FPX_BIMB', 'FPX_BOC', 'FPX_BRakyat', 'FPX_BSN', 'FPX_CIMB', 'FPX_HLB', 'FPX_HSBC', 'FPX_KFH', 'FPX_M2U', 'FPX_Muamalat', 'FPX_OCBC', 'FPX_PBB', 'FPX_RHB', 'FPX_SCB', 'FPX_UOB']:
             amount_after_deduction = row['iPay88 Received Amount (RM)'] - (row['iPay88 Received Amount (RM)'] * 0.024)
             return round(amount_after_deduction if amount_after_deduction > 0.6 else (row['iPay88 Received Amount (RM)'] - 0.6), 2)
