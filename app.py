@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import io
+import traceback
 from data_processing import process_data_zuba  # Import zuba data processing function
 from data_processing import process_data_ipay # Import ipay data processing function
 from data_processing import merge_dataset # Import merge dataset function
@@ -84,10 +85,10 @@ if (uploaded_file_zuba is not None) & (uploaded_file_ipay is not None):
         )
 
     except Exception as e:
-        st.error("Wrong Report Format! Please Check your File Format and try again.")
+        st.text(traceback.format_exc())
 
 # Set Footer for version 
-st.markdown("""
+st.markdown(""" 
     <style>
     .footer {
         position: fixed;
@@ -101,6 +102,6 @@ st.markdown("""
     }
     </style>
     <div class="footer">
-        Marcus (Version. 20250515)
+        Marcus (Version. 20250801)
     </div>
     """, unsafe_allow_html=True)
