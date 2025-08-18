@@ -19,7 +19,7 @@ def process_data_ipay(df_ipay):
     df_ipay.columns = df_ipay.columns.str.strip()
 
     # Retain only the chosen columns
-    chosen_columns = ['Merchant RefNo', 'Payment Method', 'Card type', 'Payment Category']  # Define the columns you want to keep
+    chosen_columns = ['Reference No', 'Payment Method', 'Card type', 'Payment Category']  # Define the columns you want to keep
     df_ipay_result = df_ipay[chosen_columns]  # Filter the DataFrame to keep only these columns
 
     return df_ipay_result
@@ -27,7 +27,7 @@ def process_data_ipay(df_ipay):
 def merge_dataset(zuba_result_df, ipay_result_df):
     
     # Perform a left join
-    df_zuba = pd.merge(ipay_result_df, zuba_result_df, left_on='Merchant RefNo', right_on='Booking No.', how='left')
+    df_zuba = pd.merge(ipay_result_df, zuba_result_df, left_on='Reference No', right_on='Booking No.', how='left')
 
     # Column formatting for easier calculation 
     df_zuba["Room / Per Night / Price/每晚/價格"] = pd.to_numeric(df_zuba["Room / Per Night / Price/每晚/價格"].str.replace('RM', '').str.strip(), errors='coerce')
