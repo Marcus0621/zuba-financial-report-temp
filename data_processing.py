@@ -19,7 +19,7 @@ def process_data_ipay(df_ipay):
     df_ipay.columns = df_ipay.columns.str.strip()
 
     # Retain only the chosen columns
-    chosen_columns = ['Reference No', 'Payment Method', 'Card type', 'Payment Category']  # Define the columns you want to keep
+    chosen_columns = ['Reference No', 'Payment Method', 'Card Type', 'Payment Category']  # Define the columns you want to keep
     df_ipay_result = df_ipay[chosen_columns]  # Filter the DataFrame to keep only these columns
 
     return df_ipay_result
@@ -45,7 +45,7 @@ def merge_dataset(zuba_result_df, ipay_result_df):
 
         #To check 2 columns
         payment_method = value['Payment Method']
-        card_type = value['Card type']
+        card_type = value['Card Type']
         payment_category = value['Payment Category']
 
         if payment_method in ['AliPay', 'AliPay_RMB']:
@@ -97,7 +97,7 @@ def merge_dataset(zuba_result_df, ipay_result_df):
 
         #To check 2 columns
         payment_method = row['Payment Method']
-        card_type = row['Card type']
+        card_type = row['Card Type']
         payment_category = row['Payment Category']
 
         if payment_method in ['AliPay', 'AliPay_RMB']:
