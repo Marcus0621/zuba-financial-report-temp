@@ -102,6 +102,6 @@ st.markdown("""
     }
     </style>
     <div class="footer">
-        Marcus (Version. 20250801)
+        Marcus (Version. 20250819)
     </div>
     """, unsafe_allow_html=True)

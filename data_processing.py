@@ -129,13 +129,15 @@ def merge_dataset(zuba_result_df, ipay_result_df):
     # Apply the function to each row
     df_zuba['Zuba Bank Received Payment (RM)'] = df_zuba.apply(calculate_zuba_received_payment, axis=1)
 
+    df_zuba['SST 8% (RM)'] = (df_zuba['Host Commission - 12% (RM)'] * 0.08).round(2)
+
     #Calculate for Total Amount Pay to Host (RM), use Zuba receive payment because already include tax inside 
-    df_zuba['Total Amount Pay to Host (RM)'] = df_zuba['Zuba Bank Received Payment (RM)'] - df_zuba['Host Commission - 12% (RM)'] - df_zuba['Tourist Tax']
+    df_zuba['Total Amount Pay to Host (RM)'] = df_zuba['Zuba Bank Received Payment (RM)'] - df_zuba['Host Commission - 12% (RM)'] - df_zuba['Tourist Tax'] - df_zuba['SST 8% (RM)']
 
     #Reorder Column 
     report_order = ['Booking No.', 'Confirmation Code', 'Booking Date', 'User', 'Booker Name', 'Booker Email', 'Check-in Date', 'Check-out Date', 'Property', 'Owner Email', 'Room Type',  
                     'Unit(s)', 'Total Guest', 'Room / Per Night / Price/每晚/價格', 'Day(s)', 'Total Room Rate', 'Room / Cleaning Fee/清潔費', 'Sales Tax', 'Hotel Tax', 'Service Tax', 'Tourist Tax', 'Total Amount', 'iPay88 Received Amount (RM)',
-                    'ipay88 MDR', 'Zuba Bank Received Payment (RM)', 'Payment Method', 'Status', 'TA Commission - 10% (RM)', 'Host Commission - 12% (RM)', 'Total Amount After Commission (RM)', 'Total Amount Pay to Host (RM)'] 
+                    'ipay88 MDR', 'Zuba Bank Received Payment (RM)', 'Payment Method', 'Status', 'TA Commission - 10% (RM)', 'Host Commission - 12% (RM)', 'SST 8% (RM)', 'Total Amount After Commission (RM)', 'Total Amount Pay to Host (RM)'] 
 
     df_zuba = df_zuba[report_order]
 
